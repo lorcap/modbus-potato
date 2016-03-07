@@ -7,6 +7,7 @@
 //
 #ifndef __ModbusPotato_Interface_h__
 #define __ModbusPotato_Interface_h__
+#include <stddef.h>
 #include "ModbusTypes.h"
 namespace ModbusPotato
 {
