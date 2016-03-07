@@ -17,6 +17,8 @@ namespace ModbusPotato
 #elif _MSC_VER
     // system tick type
     typedef DWORD system_tick_t;
+#else
+    typedef unsigned int system_tick_t;
 #endif
 
     namespace modbus_exception_code
