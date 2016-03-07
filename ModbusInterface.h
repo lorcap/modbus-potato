@@ -15,6 +15,13 @@ namespace ModbusPotato
 #ifndef htons
     static inline uint16_t htons(uint16_t value) { return (value << 8) | (value >> 8); }
 #endif
+#else
+#ifndef htons
+    static inline uint16_t htons(uint16_t value) { return (value << 8) | (value >> 8); }
+#endif
+#ifndef ntohs
+    static inline uint16_t ntohs(uint16_t value) { return (value << 8) | (value >> 8); }
+#endif
 #endif
 
     // forward declarations
