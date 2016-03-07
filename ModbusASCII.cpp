@@ -622,8 +622,9 @@ tx_wait:
                 m_state = state_queue; // set the state machine to the 'queue' state we the user can access the buffer
                 return true;
             }
+        default:
+                return false; // not ready to send
         }
-        return false; // not ready to send
     }
 
     void CModbusASCII::send()
