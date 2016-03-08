@@ -108,8 +108,10 @@ namespace ModbusPotato
         m_T1p5 = t1p5 / m_timer->microseconds_per_tick();
 
         // make sure the delays are each at least 2 counts
-        m_T3p5 = m_T3p5 < minimum_tick_count ? minimum_tick_count : m_T3p5;
-        m_T1p5 = m_T1p5 < minimum_tick_count ? minimum_tick_count : m_T1p5;
+        if (m_T3p5 < minimum_tick_count)
+                m_T3p5 = minimum_tick_count;
+        if (m_T1p5 < minimum_tick_count)
+                m_T1p5 = minimum_tick_count;
     }
 
     unsigned long CModbusRTU::poll()
