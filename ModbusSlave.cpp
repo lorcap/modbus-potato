@@ -210,7 +210,7 @@ namespace ModbusPotato
         uint8_t check = buffer[5];
 
         // make sure the counts are valid
-        if ((count + 7) / 8 != check || check + 6 != framer->buffer_len())
+        if ((count + 7) / 8 != check || check + 6 != (uint8_t) framer->buffer_len())
             return modbus_exception_code::illegal_data_value;
 
         // execute the handler
@@ -240,7 +240,7 @@ namespace ModbusPotato
         uint8_t check = buffer[5];
 
         // make sure the counts are valid
-        if (count < 0 || count * 2 != check || check + 6 != framer->buffer_len())
+        if (count * 2 != check || check + 6 != (uint8_t) framer->buffer_len())
             return modbus_exception_code::illegal_data_value;
 
         // get the pointer into the buffer for the resulting data
