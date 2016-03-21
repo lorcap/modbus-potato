@@ -90,6 +90,7 @@ idle:
                 }
                 return 0; // waiting for an event
             }
+            break;
         case state_frame_ready: // waiting for the application layer to process the frame
         case state_queue: // waiting for the application layer to create frame for transmission
             {
@@ -191,6 +192,7 @@ rx_addr:
                 m_last_ticks = m_timer->ticks();
                 goto rx_pdu;
             }
+            break;
         case state_rx_pdu_high: // receiving the high or low byte of the PDU [ASCII]
         case state_rx_pdu_low:
 rx_pdu:
@@ -284,6 +286,7 @@ rx_pdu:
                     continue;
                 }
             }
+            break;
         case state_rx_cr: // got carriage return, waiting for final line feed
 rx_cr:
             {
@@ -345,6 +348,7 @@ rx_cr:
                 // evaluate the switch statement again in case something has changed
                 return poll(); // jump to the start of the function to re-evalutate entire switch statement
             }
+            break;
         case state_tx_sof: // transmitting start of frame character [ASCII]
             {
                 // try and write the start of frame character
@@ -392,6 +396,7 @@ tx_addr_high:
 
                 return 0; // waiting for room in the write buffer
             }
+            break;
         case state_tx_addr_low: // transmitting remote station address [ASCII]
 tx_addr_low:
             {
@@ -418,6 +423,7 @@ tx_addr_low:
 
                 return 0; // waiting for room in the write buffer
             }
+            break;
         case state_tx_pdu_high: // transmitting PDU [ASCII]
 tx_pdu_high:
             {
@@ -444,6 +450,7 @@ tx_pdu_high:
 
                 return 0; // waiting for room in the write buffer
             }
+            break;
         case state_tx_pdu_low: // transmitting PDU [ASCII]
 tx_pdu_low:
             {
@@ -483,6 +490,7 @@ tx_pdu_low:
 
                 return 0; // waiting for room in the write buffer
             }
+            break;
         case state_tx_lrc_high: // transmitting LRC high [ASCII]
 tx_lrc_high:
             {
@@ -508,6 +516,7 @@ tx_lrc_high:
 
                 return 0; // waiting for room in the write buffer
             }
+            break;
         case state_tx_lrc_low: // transmitting LRC low [ASCII]
 tx_lrc_low:
             {
@@ -533,6 +542,7 @@ tx_lrc_low:
 
                 return 0; // waiting for room in the write buffer
             }
+            break;
         case state_tx_cr: // transmitting carriage return character [ASCII]
 tx_cr:
             {
@@ -555,6 +565,7 @@ tx_cr:
 
                 return 0; // waiting for room in the write buffer
             }
+            break;
         case state_tx_lf: // transmitting carriage return character [ASCII]
 tx_lf:
             {
@@ -577,6 +588,7 @@ tx_lf:
 
                 return 0; // waiting for room in the write buffer
             }
+            break;
         case state_tx_wait: // waiting for the characters to finish transmitting [ASCII]
 tx_wait:
             {

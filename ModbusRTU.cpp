@@ -192,6 +192,7 @@ dump:
                 // if the timer has not finished, then return the amount of time remaining
                 return m_T3p5 - elapsed;
             }
+            break;
         case state_idle: // waiting for something to happen
 idle:       
             {
@@ -219,6 +220,7 @@ idle:
                 }
                 return 0; // waiting for an event
             }
+            break;
         case state_frame_ready: // waiting for the application layer to process the frame
         case state_queue: // waiting for the application layer to create frame for transmission
             {
@@ -318,6 +320,7 @@ receive:
                 // evaluate the switch statement again in case something has changed
                 return poll(); // jump to the start of the function to re-evalutate entire switch statement
             }
+            break;
         case state_tx_addr: // transmitting remote station address [RTU]
             {
                 // dump any incoming data
@@ -404,6 +407,7 @@ tx_pdu:
 
                 return 0; // waiting for room in the write buffer
             }
+            break;
         case state_tx_crc: // transmitting the frame CRC
 tx_crc:
             {
@@ -441,6 +445,7 @@ tx_crc:
 
                 return 0; // waiting for room in the write buffer
             }
+            break;
         case state_tx_drain: // waiting for the characters to finish transmitting
 tx_drain:
             {
@@ -462,6 +467,7 @@ tx_drain:
 
                 return 0; // waiting for write buffer to drain
             }
+            break;
         case state_tx_wait: // waiting for final T3.5 delay after transmitting
 tx_wait:
             {
