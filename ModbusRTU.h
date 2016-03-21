@@ -32,20 +32,11 @@ namespace ModbusPotato
         /// </remarks>
         void setup(unsigned long baud);
 
-        virtual void set_handler(IFrameHandler* handler) { m_handler = handler; }
-        virtual uint8_t station_address() const { return m_station_address; }
-        virtual void set_station_address(uint8_t address) { m_station_address = address; }
-        virtual unsigned long poll();
-        virtual bool begin_send();
-        virtual void send();
-        virtual void finished();
-        virtual bool frame_ready() const { return m_state == state_frame_ready; }
-        virtual uint8_t frame_address() const { return m_frame_address; }
-        virtual void set_frame_address(uint8_t address) { m_frame_address = address; }
-        virtual uint8_t* buffer() { return m_buffer; }
-        virtual size_t buffer_len() const { return m_buffer_len; }
-        virtual void set_buffer_len(size_t len) { m_buffer_len = len; }
-        virtual size_t buffer_max() const { return m_buffer_max; }
+        unsigned long poll();
+        bool begin_send();
+        void send();
+        void finished();
+        bool frame_ready() const { return m_state == state_frame_ready; }
     private:
         enum
         {
@@ -57,13 +48,7 @@ namespace ModbusPotato
             quantization_rounding_count = 2,
             min_pdu_length = 3, // minimum PDU length, excluding the station address. function code and two crc bytes
         };
-        IStream* m_stream;
-        ITimeProvider* m_timer;
-        IFrameHandler* m_handler;
-        uint8_t* m_buffer;
-        size_t m_buffer_len, m_buffer_max;
         uint16_t m_checksum;
-        uint8_t m_station_address, m_frame_address;
         uint8_t m_buffer_tx_pos;
         enum state_type
         {

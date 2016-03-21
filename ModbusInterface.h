@@ -151,12 +151,26 @@ namespace ModbusPotato
     class IFramer
     {
     public:
+        IFramer(IStream* stream, ITimeProvider* timer, uint8_t* buffer, size_t buffer_max)
+            :   m_stream(stream)
+            ,   m_timer(timer)
+            ,   m_buffer(buffer)
+            ,   m_buffer_max(buffer_max)
+            ,   m_buffer_len()
+            ,   m_handler()
+            ,   m_station_address()
+            ,   m_frame_address()
+        {}
+
         virtual ~IFramer() {}
 
         /// <summary>
         /// Sets the handler interface for various events.
         /// </summary>
-        virtual void set_handler(IFrameHandler* handler) = 0;
+        void set_handler(IFrameHandler* handler)
+        {
+                m_handler = handler;
+        }
 
         /// <summary>
         /// Returns the station address.
@@ -165,7 +179,10 @@ namespace ModbusPotato
         /// This is the local slave address, not the address of the received or
         /// transmitted slave.  If this is 0 then all addresses will be matched.
         /// </remarks>
-        virtual uint8_t station_address() const = 0;
+        uint8_t station_address() const
+        {
+                return m_station_address;
+        }
 
         /// <summary>
         /// Sets the station address.
@@ -177,7 +194,10 @@ namespace ModbusPotato
         /// This must be set to 0 on the master, and set to the slave address
         /// on slaves.
         /// </remarks>
-        virtual void set_station_address(uint8_t address) = 0;
+        void set_station_address(uint8_t address)
+        {
+                m_station_address = address;
+        }
 
         /// <summary>
         /// Handles any timeouts and transfers more data as needed.
@@ -260,7 +280,10 @@ namespace ModbusPotato
         /// local address of the slave.  See station_address() for the local
         /// slave address.
         /// </remarks>
-        virtual uint8_t frame_address() const = 0;
+        uint8_t frame_address() const
+        {
+                return m_frame_address;
+        }
 
         /// <summary>
         /// Sets the station address for the PDU, or 0 if broadcast or point-to-point.
@@ -270,7 +293,10 @@ namespace ModbusPotato
         /// local address of the slave.  See set_station_address() for the
         /// local slave address.
         /// </remarks>
-        virtual void set_frame_address(uint8_t address) = 0;
+        void set_frame_address(uint8_t address)
+        {
+                m_frame_address = address;
+        }
 
         /// <summary>
         /// Gets the PDU buffer pointer.
@@ -282,7 +308,10 @@ namespace ModbusPotato
         /// The station address and checksum bytes are not included in this
         /// buffer.
         /// </remarks>
-        virtual uint8_t* buffer() = 0;
+        uint8_t* buffer()
+        {
+                return m_buffer;
+        }
 
         /// <summary>
         /// Returns the number of data bytes in the PDU buffer.
@@ -291,7 +320,10 @@ namespace ModbusPotato
         /// This value includes the function code byte, and data bytes, but
         /// excludes the station address and checksum bytes.
         /// </remarks>
-        virtual size_t buffer_len() const = 0;
+        size_t buffer_len() const
+        {
+                return m_buffer_len;
+        }
 
         /// <summary>
         /// Sets the length of the buffer.
@@ -300,12 +332,26 @@ namespace ModbusPotato
         /// This value includes the function code byte, and data bytes, but
         /// excludes the station address and checksum bytes.
         /// </remarks>
-        virtual void set_buffer_len(size_t len) = 0;
+        void set_buffer_len(size_t len)
+        {
+                m_buffer_len = len;
+        }
 
         /// <summary>
         /// Returns the maximum allowable length of the buffer.
         /// </summary>
-        virtual size_t buffer_max() const = 0;
+        size_t buffer_max() const
+        {
+                return m_buffer_max;
+        }
+
+    protected:
+        IStream* m_stream;
+        ITimeProvider* m_timer;
+        IFrameHandler* m_handler;
+        uint8_t m_station_address, m_frame_address;
+        uint8_t* m_buffer;
+        size_t m_buffer_len, m_buffer_max;
     };
 
     /// <summary>

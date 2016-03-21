@@ -48,15 +48,8 @@ namespace ModbusPotato
     }
 
     CModbusRTU::CModbusRTU(IStream* stream, ITimeProvider* timer, uint8_t* buffer, size_t buffer_max)
-        :   m_stream(stream)
-        ,   m_timer(timer)
-        ,   m_buffer(buffer)
-        ,   m_buffer_max(buffer_max)
-        ,   m_buffer_len()
-        ,   m_handler()
+        :   IFramer(stream, timer, buffer, buffer_max)
         ,   m_checksum()
-        ,   m_station_address()
-        ,   m_frame_address()
         ,   m_buffer_tx_pos()
         ,   m_state(state_dump)
         ,   m_last_ticks()
