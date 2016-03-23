@@ -423,5 +423,64 @@ namespace ModbusPotato
         /// </summary>
         virtual modbus_exception_code::modbus_exception_code write_multiple_registers(uint16_t address, uint16_t count, const uint16_t* values) = 0;
     };
+
+    /// <summary>
+    /// The interface to be implemented by the user application for handling master requests.
+    /// </summary>
+    class IMasterHandler
+    {
+    public:
+        virtual ~IMasterHandler() {}
+
+        /// <summary>
+        /// Handles Modbus function 0x01: Read Coils.
+        /// </summary>
+        virtual bool read_coils_rsp(IFramer* framer) = 0;
+
+        /// <summary>
+        /// Handles Modbus function 0x02: Read Discrete Inputs.
+        /// </summary>
+        virtual bool read_discrete_inputs_rsp(IFramer* framer) = 0;
+
+        /// <summary>
+        /// Handles Modbus function 0x03: Read Holding Registers.
+        /// </summary>
+        virtual bool read_holding_registers_rsp(uint16_t address, size_t n, const uint16_t* values) = 0;
+
+        /// <summary>
+        /// Handles Modbus function 0x04: Read Input Register.
+        /// </summary>
+        virtual bool read_input_registers_rsp(uint16_t address, size_t n, const uint16_t* values) = 0;
+
+        /// <summary>
+        /// Handles Modbus function 0x05: Write Single Coil.
+        /// </summary>
+        virtual bool write_single_coil_rsp(IFramer* framer) = 0;
+
+        /// <summary>
+        /// Handles Modbus function 0x06: Write Single Register.
+        /// </summary>
+        virtual bool write_single_register_rsp(uint16_t address, uint16_t result) = 0;
+
+        /// <summary>
+        /// Handles Modbus function 0x0F: Write Multiple Coils.
+        /// </summary>
+        virtual bool write_multiple_coils_rsp(IFramer* framer) = 0;
+
+        /// <summary>
+        /// Handles Modbus function 0x10: Write Multiple registers.
+        /// </summary>
+        virtual bool write_multiple_registers_rsp(uint16_t address, size_t n, uint16_t* result) = 0;
+
+        /// <summary>
+        /// Slave didn't respond on time.
+        /// </summary>
+        virtual bool response_time_out(void) = 0;
+
+        /// <summary>
+        /// Slave responded with an exception.
+        /// </summary>
+        virtual bool exception_response(enum modbus_exception_code::modbus_exception_code code) = 0;
+    };
 }
 #endif

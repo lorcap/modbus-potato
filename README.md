@@ -3,7 +3,7 @@ C++ Embedded Modbus Library
 
 Features:
  * object oriented C++
- * currently supports Modbus RTU slave
+ * currently supports Modbus RTU master and slave
  * most methods and functions are unit tested
  * easy to use - in most cases just call the correct poll() method in the main loop
  * liberal license (MIT)

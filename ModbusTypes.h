@@ -26,7 +26,7 @@ namespace ModbusPotato
         /// <summary>
         /// Function codes
         /// </summary>
-        enum
+        enum function_code
         {
             read_coil_status = 0x01,
             read_discrete_input_status = 0x02,
