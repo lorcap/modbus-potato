@@ -29,28 +29,28 @@ namespace ModbusPotato
         {
             switch (framer->buffer()[0])
             {
-            case read_coil_status:
+            case function_code::read_coil_status:
                 result = read_bit_input_rsp(framer, false);
                 break;
-            case read_discrete_input_status:
+            case function_code::read_discrete_input_status:
                 result = read_bit_input_rsp(framer, true);
                 break;
-            case read_holding_registers:
+            case function_code::read_holding_registers:
                 result = read_registers_rsp(framer, true);
                 break;
-            case read_input_registers:
+            case function_code::read_input_registers:
                 result = read_registers_rsp(framer, false);
                 break;
-            case write_single_coil:
+            case function_code::write_single_coil:
                 result = write_single_coil_rsp(framer);
                 break;
-            case write_single_register:
+            case function_code::write_single_register:
                 result = write_single_register_rsp(framer);
                 break;
-            case write_multiple_coils:
+            case function_code::write_multiple_coils:
                 result = write_multiple_coils_rsp(framer);
                 break;
-            case write_multiple_registers:
+            case function_code::write_multiple_registers:
                 result = write_multiple_registers_rsp(framer);
                 break;
             }
