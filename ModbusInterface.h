@@ -460,7 +460,7 @@ namespace ModbusPotato
         /// <summary>
         /// Handles Modbus function 0x06: Write Single Register.
         /// </summary>
-        virtual bool write_single_register_rsp(uint16_t address, uint16_t result) = 0;
+        virtual bool write_single_register_rsp(uint16_t address) = 0;
 
         /// <summary>
         /// Handles Modbus function 0x0F: Write Multiple Coils.

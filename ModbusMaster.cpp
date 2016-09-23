@@ -205,10 +205,7 @@ namespace ModbusPotato
 
         if (single)
         {
-            uint16_t val = (uint16_t) (*buffer++ << 8); // quantity of registers
-                     val|= (uint16_t) (*buffer++ << 0); //
-
-            return m_handler->write_single_register_rsp(address, val);
+            return m_handler->write_single_register_rsp(address);
         }
         else {
             size_t n = (size_t) (*buffer++ << 8);       // quantity of registers

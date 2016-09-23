@@ -33,9 +33,8 @@ namespace ModbusPotato
             (void) framer;
             return true;
         }
-        virtual bool write_single_register_rsp(uint16_t address, uint16_t result) {
+        virtual bool write_single_register_rsp(uint16_t address) {
             (void) address;
-            (void) result;
             return true;
         }
         virtual bool write_multiple_coils_rsp(IFramer* framer) {
