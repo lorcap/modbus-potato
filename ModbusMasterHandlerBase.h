@@ -41,10 +41,9 @@ namespace ModbusPotato
             (void) framer;
             return true;
         }
-        virtual bool write_multiple_registers_rsp(uint16_t address, size_t n, uint16_t* result) {
+        virtual bool write_multiple_registers_rsp(uint16_t address, size_t n) {
             (void) address;
             (void) n;
-            (void) result;
             return true;
         }
         virtual bool response_time_out(void) {

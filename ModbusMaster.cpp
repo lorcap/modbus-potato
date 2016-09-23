@@ -214,7 +214,7 @@ namespace ModbusPotato
             if ((n < 1) || (n > 0x7b))
                 return false;
 
-            return m_handler->write_multiple_registers_rsp(address, n, (uint16_t *) buffer);
+            return m_handler->write_multiple_registers_rsp(address, n);
         }
 }
 

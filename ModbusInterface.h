@@ -376,7 +376,7 @@ namespace ModbusPotato
     /// If the address and count are valid, but an error occurs when handling
     /// the command, then the handler should return
     /// modbus_exception_code::server_device_failure.
-    /// 
+    ///
     /// </remarks>
     class ISlaveHandler
     {
@@ -470,7 +470,7 @@ namespace ModbusPotato
         /// <summary>
         /// Handles Modbus function 0x10: Write Multiple registers.
         /// </summary>
-        virtual bool write_multiple_registers_rsp(uint16_t address, size_t n, uint16_t* result) = 0;
+        virtual bool write_multiple_registers_rsp(uint16_t address, size_t n) = 0;
 
         /// <summary>
         /// Slave didn't respond on time.
