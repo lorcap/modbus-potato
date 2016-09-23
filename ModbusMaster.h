@@ -33,6 +33,10 @@ namespace ModbusPotato
         {
             return write_multiple_registers_req(slave, address, data.size(), data.begin(), data.end());
         }
+        inline bool write_multiple_registers_req(const uint8_t slave, const uint16_t address, const size_t n, const uint16_t data[])
+        {
+            return write_multiple_registers_req(slave, address, n, &data[0], &data[n]);
+        }
         template <typename ITER>
         inline bool write_multiple_registers_req(const uint8_t slave, const uint16_t address, const size_t n, const ITER begin, const ITER end)
         {
