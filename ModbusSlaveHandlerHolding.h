@@ -1,12 +1,12 @@
 #ifndef __ModbusSlaveHandlerHolding_h__
 #define __ModbusSlaveHandlerHolding_h__
-#include "ModbusSlaveHandlerBase.h"
+#include "ModbusInterface.h"
 namespace ModbusPotato
 {
     /// <summary>
     /// This class is an example of a slave handler for reading and writing holding registers to an array.
     /// </summary>
-    class CModbusSlaveHandlerHolding : public CModbusSlaveHandlerBase
+    class CModbusSlaveHandlerHolding : public ISlaveHandler
     {
     public:
         CModbusSlaveHandlerHolding(uint16_t* array, size_t len);
