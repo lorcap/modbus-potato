@@ -9,44 +9,44 @@ namespace ModbusPotato
     class CModbusSlaveHandlerBase : public ISlaveHandler
     {
     public:
-        virtual modbus_exception_code::modbus_exception_code read_coils(uint16_t address, uint16_t count, uint8_t* result) {
+        modbus_exception_code::modbus_exception_code read_coils(uint16_t address, uint16_t count, uint8_t* result) override {
                 (void) address;
                 (void) count;
                 (void) result;
                 return modbus_exception_code::illegal_function;
         }
-        virtual modbus_exception_code::modbus_exception_code read_discrete_inputs(uint16_t address, uint16_t count, uint8_t* result) {
+        modbus_exception_code::modbus_exception_code read_discrete_inputs(uint16_t address, uint16_t count, uint8_t* result) override {
                 (void) address;
                 (void) count;
                 (void) result;
                 return modbus_exception_code::illegal_function;
         }
-        virtual modbus_exception_code::modbus_exception_code read_holding_registers(uint16_t address, uint16_t count, uint16_t* result) {
+        modbus_exception_code::modbus_exception_code read_holding_registers(uint16_t address, uint16_t count, uint16_t* result) override {
                 (void) address;
                 (void) count;
                 (void) result;
                 return modbus_exception_code::illegal_function;
         }
-        virtual modbus_exception_code::modbus_exception_code read_input_registers(uint16_t address, uint16_t count, uint16_t* result) {
+        modbus_exception_code::modbus_exception_code read_input_registers(uint16_t address, uint16_t count, uint16_t* result) override {
                 (void) address;
                 (void) count;
                 (void) result;
                 return modbus_exception_code::illegal_function;
         }
-        virtual modbus_exception_code::modbus_exception_code write_single_coil(uint16_t address, bool value) {
+        modbus_exception_code::modbus_exception_code write_single_coil(uint16_t address, bool value) override {
                 uint8_t tmp = value ? 1 : 0; return write_multiple_coils(address, 1, &tmp);
         }
-        virtual modbus_exception_code::modbus_exception_code write_single_register(uint16_t address, uint16_t value) {
+        modbus_exception_code::modbus_exception_code write_single_register(uint16_t address, uint16_t value) override {
                 (void) address;
                 return write_multiple_registers(address, 1, &value);
         }
-        virtual modbus_exception_code::modbus_exception_code write_multiple_registers(uint16_t address, uint16_t count, const uint16_t* values) {
+        modbus_exception_code::modbus_exception_code write_multiple_registers(uint16_t address, uint16_t count, const uint16_t* values) override {
                 (void) address;
                 (void) count;
                 (void) values;
                 return modbus_exception_code::illegal_function;
         }
-        virtual modbus_exception_code::modbus_exception_code write_multiple_coils(uint16_t address, uint16_t count, const uint8_t* values) {
+        modbus_exception_code::modbus_exception_code write_multiple_coils(uint16_t address, uint16_t count, const uint8_t* values) override {
                 (void) address;
                 (void) count;
                 (void) values;

@@ -45,7 +45,7 @@ namespace ModbusPotato
 
         void poll(void);
 
-        void frame_ready(IFramer* framer);
+        void frame_ready(IFramer* framer) override;
 
     private:
         enum class state {

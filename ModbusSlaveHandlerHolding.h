@@ -10,8 +10,8 @@ namespace ModbusPotato
     {
     public:
         CModbusSlaveHandlerHolding(uint16_t* array, size_t len);
-        virtual modbus_exception_code::modbus_exception_code read_holding_registers(uint16_t address, uint16_t count, uint16_t* result);
-        virtual modbus_exception_code::modbus_exception_code write_multiple_registers(uint16_t address, uint16_t count, const uint16_t* values);
+        modbus_exception_code::modbus_exception_code read_holding_registers(uint16_t address, uint16_t count, uint16_t* result) override;
+        modbus_exception_code::modbus_exception_code write_multiple_registers(uint16_t address, uint16_t count, const uint16_t* values) override;
     private:
         uint16_t* m_array;
         size_t m_len;

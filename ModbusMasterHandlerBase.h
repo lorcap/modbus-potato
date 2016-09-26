@@ -9,47 +9,47 @@ namespace ModbusPotato
     class CModbusMasterHandlerBase : public IMasterHandler
     {
     public:
-        virtual bool read_coils_rsp(IFramer* framer) {
+        bool read_coils_rsp(IFramer* framer) override {
             (void) framer;
             return true;
         }
-        virtual bool read_discrete_inputs_rsp(IFramer* framer) {
+        bool read_discrete_inputs_rsp(IFramer* framer) override {
             (void) framer;
             return true;
         }
-        virtual bool read_holding_registers_rsp(uint16_t address, size_t n, const uint16_t* values) {
+        bool read_holding_registers_rsp(uint16_t address, size_t n, const uint16_t* values) override {
             (void) address;
             (void) n;
             (void) values;
             return true;
         }
-        virtual bool read_input_registers_rsp(uint16_t address, size_t n, const uint16_t* values) {
+        bool read_input_registers_rsp(uint16_t address, size_t n, const uint16_t* values) override {
             (void) address;
             (void) n;
             (void) values;
             return true;
         }
-        virtual bool write_single_coil_rsp(IFramer* framer) {
+        bool write_single_coil_rsp(IFramer* framer) override {
             (void) framer;
             return true;
         }
-        virtual bool write_single_register_rsp(uint16_t address) {
+        bool write_single_register_rsp(uint16_t address) override {
             (void) address;
             return true;
         }
-        virtual bool write_multiple_coils_rsp(IFramer* framer) {
+        bool write_multiple_coils_rsp(IFramer* framer) override {
             (void) framer;
             return true;
         }
-        virtual bool write_multiple_registers_rsp(uint16_t address, size_t n) {
+        bool write_multiple_registers_rsp(uint16_t address, size_t n) override {
             (void) address;
             (void) n;
             return true;
         }
-        virtual bool response_time_out(void) {
+        bool response_time_out(void) override {
             return true;
         }
-        virtual bool exception_response(enum modbus_exception_code::modbus_exception_code code) {
+        bool exception_response(enum modbus_exception_code::modbus_exception_code code) override {
             (void) code;
             return true;
         }

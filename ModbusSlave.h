@@ -8,7 +8,7 @@ namespace ModbusPotato
     {
     public:
         CModbusSlave(ISlaveHandler* handler);
-        virtual void frame_ready(IFramer* framer);
+        void frame_ready(IFramer* framer) override;
     private:
         uint8_t read_bit_input_rsp(IFramer* framer, bool discrete);
         uint8_t read_registers_rsp(IFramer* framer, bool holding);
