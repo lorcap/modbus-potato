@@ -20,7 +20,7 @@ namespace ModbusPotato
         return true;
     }
 
-    bool CModbusMasterHandlerHolding::write_multiple_registers_rsp(uint16_t address, uint16_t count)
+    bool CModbusMasterHandlerHolding::write_multiple_registers_rsp(uint16_t address, size_t count)
     {
         // check to make sure the address and count are valid
         if (count > m_len || address >= m_len || (size_t)(address + count) > m_len)
