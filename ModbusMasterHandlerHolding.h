@@ -15,6 +15,8 @@ namespace ModbusPotato
     private:
         uint16_t* m_array;
         size_t m_len;
+
+        bool sanity_check (const uint16_t address, const size_t n) const;
     };
 }
 #endif

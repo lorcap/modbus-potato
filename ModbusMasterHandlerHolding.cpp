@@ -1,6 +1,11 @@
 #include "ModbusMasterHandlerHolding.h"
 namespace ModbusPotato
 {
+    bool CModbusMasterHandlerHolding::sanity_check (const uint16_t address, const size_t n) const
+    {
+            return ((n <= m_len) && (address < m_len) && ((size_t) (address + n) <= m_len));
+    }
+
     CModbusMasterHandlerHolding::CModbusMasterHandlerHolding(uint16_t* array, size_t len)
         :  m_array(array)
         ,  m_len(len)
@@ -9,8 +14,7 @@ namespace ModbusPotato
 
     bool CModbusMasterHandlerHolding::read_holding_registers_rsp(uint16_t address, size_t n, const uint16_t* values)
     {
-        // make sure the address and count are valid
-        if (n > m_len || address >= m_len || (size_t)(address + n) > m_len)
+        if (!sanity_check(address, n))
             return false;
 
         // copy in the values
@@ -22,8 +26,7 @@ namespace ModbusPotato
 
     bool CModbusMasterHandlerHolding::write_multiple_registers_rsp(uint16_t address, size_t count)
     {
-        // check to make sure the address and count are valid
-        if (count > m_len || address >= m_len || (size_t)(address + count) > m_len)
+        if (!sanity_check(address, count))
             return false;
 
         return true;
