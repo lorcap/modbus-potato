@@ -36,6 +36,7 @@ namespace ModbusPotato
         bool begin_send();
         void send();
         void finished();
+        bool idle() const { return m_state == state_idle; }
         bool frame_ready() const { return m_state == state_frame_ready; }
     private:
         enum
