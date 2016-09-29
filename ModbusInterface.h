@@ -386,46 +386,63 @@ namespace ModbusPotato
         /// <summary>
         /// Handles Modbus function 0x01: Read Coils.
         /// </summary>
-        virtual modbus_exception_code::modbus_exception_code read_coils(uint16_t address, uint16_t count, uint8_t* result) {
-            (void) address;
-            (void) count;
-            (void) result;
+        /**
+         * @param address  register start address
+         * @param n        number of registers
+         * @param values   values to store
+         * @return Modbus exception code, if any
+         */
+        virtual modbus_exception_code::modbus_exception_code read_coils(uint16_t, uint16_t, uint8_t*) {
             return modbus_exception_code::illegal_function;
         }
 
         /// <summary>
         /// Handles Modbus function 0x02: Read Discrete Inputs.
         /// </summary>
-        virtual modbus_exception_code::modbus_exception_code read_discrete_inputs(uint16_t address, uint16_t count, uint8_t* result) {
-            (void) address;
-            (void) count;
-            (void) result;
+        /**
+         * @param address  register start address
+         * @param n        number of registers
+         * @param values   values to store
+         * @return Modbus exception code, if any
+         */
+        virtual modbus_exception_code::modbus_exception_code read_discrete_inputs(uint16_t, uint16_t, uint8_t*) {
             return modbus_exception_code::illegal_function;
         }
 
         /// <summary>
         /// Handles Modbus function 0x03: Read Holding Registers.
         /// </summary>
-        virtual modbus_exception_code::modbus_exception_code read_holding_registers(uint16_t address, uint16_t count, uint16_t* result) {
-            (void) address;
-            (void) count;
-            (void) result;
+        /**
+         * @param address  register start address
+         * @param n        number of registers
+         * @param values   values to store
+         * @return Modbus exception code, if any
+         */
+        virtual modbus_exception_code::modbus_exception_code read_holding_registers(uint16_t, uint16_t, uint16_t*) {
             return modbus_exception_code::illegal_function;
         }
 
         /// <summary>
         /// Handles Modbus function 0x04: Read Input Registers.
         /// </summary>
-        virtual modbus_exception_code::modbus_exception_code read_input_registers(uint16_t address, uint16_t count, uint16_t* result) {
-            (void) address;
-            (void) count;
-            (void) result;
+        /**
+         * @param address  register start address
+         * @param n        number of registers
+         * @param values   values to store
+         * @return Modbus exception code, if any
+         */
+        virtual modbus_exception_code::modbus_exception_code read_input_registers(uint16_t, uint16_t, uint16_t*) {
             return modbus_exception_code::illegal_function;
         }
 
         /// <summary>
         /// Handles Modbus function 0x05: Write Single Coil.
         /// </summary>
+        /**
+         * @param address  register start address
+         * @param value    value to write
+         * @return Modbus exception code, if any
+         */
         virtual modbus_exception_code::modbus_exception_code write_single_coil(uint16_t address, bool value) {
             uint8_t tmp = value ? 1 : 0; return write_multiple_coils(address, 1, &tmp);
         }
@@ -433,28 +450,38 @@ namespace ModbusPotato
         /// <summary>
         /// Handles Modbus function 0x06: Write Single Register.
         /// </summary>
+        /**
+         * @param address  register start address
+         * @param value    value to write
+         * @return Modbus exception code, if any
+         */
         virtual modbus_exception_code::modbus_exception_code write_single_register(uint16_t address, uint16_t value) {
-            (void) address;
             return write_multiple_registers(address, 1, &value);
         }
 
         /// <summary>
         /// Handles Modbus function 0x0F: Write Multiple Coils.
         /// </summary>
-        virtual modbus_exception_code::modbus_exception_code write_multiple_coils(uint16_t address, uint16_t count, const uint8_t* values) {
-            (void) address;
-            (void) count;
-            (void) values;
+        /**
+         * @param address  register start address
+         * @param n        number of registers
+         * @param values   values to write
+         * @return Modbus exception code, if any
+         */
+        virtual modbus_exception_code::modbus_exception_code write_multiple_coils(uint16_t, uint16_t, const uint8_t*) {
             return modbus_exception_code::illegal_function;
         }
 
         /// <summary>
         /// Handles Modbus function 0x10: Write Multiple registers.
         /// </summary>
-        virtual modbus_exception_code::modbus_exception_code write_multiple_registers(uint16_t address, uint16_t count, const uint16_t* values) {
-            (void) address;
-            (void) count;
-            (void) values;
+        /**
+         * @param address  register start address
+         * @param n        number of registers
+         * @param values   values to write
+         * @return Modbus exception code, if any
+         */
+        virtual modbus_exception_code::modbus_exception_code write_multiple_registers(uint16_t, uint16_t, const uint16_t*) {
             return modbus_exception_code::illegal_function;
         }
     };
@@ -470,69 +497,93 @@ namespace ModbusPotato
         /// <summary>
         /// Handles Modbus function 0x01: Read Coils.
         /// </summary>
-        virtual bool read_coils_rsp(IFramer* framer) {
-            (void) framer;
+        /**
+         * @param framer  frame handler
+         * @return true, when successful, false otherwise
+         */
+        virtual bool read_coils_rsp(IFramer*) {
             return true;
         }
 
         /// <summary>
         /// Handles Modbus function 0x02: Read Discrete Inputs.
         /// </summary>
-        virtual bool read_discrete_inputs_rsp(IFramer* framer) {
-            (void) framer;
+        /**
+         * @param framer  frame handler
+         * @return true, when successful, false otherwise
+         */
+        virtual bool read_discrete_inputs_rsp(IFramer*) {
             return true;
         }
 
         /// <summary>
         /// Handles Modbus function 0x03: Read Holding Registers.
         /// </summary>
-        virtual bool read_holding_registers_rsp(uint16_t address, size_t n, const uint16_t* values) {
-            (void) address;
-            (void) n;
-            (void) values;
+        /**
+         * @param address  register start address
+         * @param n        number of registers
+         * @param values   values to store
+         * @return true, when successful, false otherwise
+         */
+        virtual bool read_holding_registers_rsp(uint16_t, size_t, const uint16_t*) {
             return true;
         }
 
         /// <summary>
         /// Handles Modbus function 0x04: Read Input Register.
         /// </summary>
-        virtual bool read_input_registers_rsp(uint16_t address, size_t n, const uint16_t* values) {
-            (void) address;
-            (void) n;
-            (void) values;
+        /**
+         * @param address  register start address
+         * @param n        number of registers
+         * @param values   values to store
+         * @return true, when successful, false otherwise
+         */
+        virtual bool read_input_registers_rsp(uint16_t, size_t, const uint16_t*) {
             return true;
         }
 
         /// <summary>
         /// Handles Modbus function 0x05: Write Single Coil.
         /// </summary>
-        virtual bool write_single_coil_rsp(IFramer* framer) {
-            (void) framer;
+        /**
+         * @param framer  frame handler
+         * @return true, when successful, false otherwise
+         */
+        virtual bool write_single_coil_rsp(IFramer*) {
             return true;
         }
 
         /// <summary>
         /// Handles Modbus function 0x06: Write Single Register.
         /// </summary>
-        virtual bool write_single_register_rsp(uint16_t address) {
-            (void) address;
+        /**
+         * @param address  register address
+         * @return true, when successful, false otherwise
+         */
+        virtual bool write_single_register_rsp(uint16_t) {
             return true;
         }
 
         /// <summary>
         /// Handles Modbus function 0x0F: Write Multiple Coils.
         /// </summary>
-        virtual bool write_multiple_coils_rsp(IFramer* framer) {
-            (void) framer;
+        /**
+         * @param framer  frame handler
+         * @return true, when successful, false otherwise
+         */
+        virtual bool write_multiple_coils_rsp(IFramer*) {
             return true;
         }
 
         /// <summary>
         /// Handles Modbus function 0x10: Write Multiple registers.
         /// </summary>
-        virtual bool write_multiple_registers_rsp(uint16_t address, size_t n) {
-            (void) address;
-            (void) n;
+        /**
+         * @param address  register start address
+         * @param n        number of registers
+         * @return true, when successful, false otherwise
+         */
+        virtual bool write_multiple_registers_rsp(uint16_t, size_t) {
             return true;
         }
 
@@ -546,8 +597,11 @@ namespace ModbusPotato
         /// <summary>
         /// Slave responded with an exception.
         /// </summary>
-        virtual bool exception_response(enum modbus_exception_code::modbus_exception_code code) {
-            (void) code;
+        /**
+         * @param code  exception code
+         * @return
+         */
+        virtual bool exception_response(enum modbus_exception_code::modbus_exception_code) {
             return true;
         }
     };
