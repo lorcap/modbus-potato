@@ -34,7 +34,7 @@ namespace ModbusPotato
             case state::processing_reply:
                 break;
             case state::waiting_turnaround_reply:
-                if (m_time_provider->ticks() - m_timer >= m_response_time_out)
+                if (m_time_provider->ticks() - m_timer >= m_turnaround_delay)
                     m_state = state::idle;
                 break;
             case state::processing_error:
