@@ -464,9 +464,6 @@ tx_drain:
         case state_tx_wait: // waiting for final T3.5 delay after transmitting
 tx_wait:
             {
-                // dump our own echo
-                m_stream->read(NULL, (size_t)-1);
-
                 // check if the T3.5 timer has elapsed
                 system_tick_t elapsed = ELAPSED(m_last_ticks, m_timer->ticks());
                 if (elapsed < m_T3p5)
