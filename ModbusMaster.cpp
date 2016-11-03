@@ -178,7 +178,7 @@ namespace ModbusPotato
         *buffer++ = (uint8_t) func;
         *buffer++ = (uint8_t) (address >> 8);
         *buffer++ = (uint8_t) address;
-        if (n != 1)
+        if (func == function_code::write_multiple_registers)
         {
             *buffer++ = (uint8_t) (n >> 8);
             *buffer++ = (uint8_t) n;
