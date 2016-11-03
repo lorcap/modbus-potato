@@ -247,10 +247,14 @@ receive:
                 {
                     // check for comm errors or if the inter-character delay has been exceeded
                     //
-                    // Note: we must add two to the timer to account for
-                    // rounding and quantization error.
+                    // Note: if T1p0 = 2/3*T1p5 is the character time, we wait
+                    // at most N*T1p0 + T1p0/2 = (2*N + 1)/3 * T1p5, where N is
+                    // the number of characters received.
                     //
-                    if (ec < 0 || elapsed >= (m_T1p5 + quantization_rounding_count))
+                    // Note: we must add two to the timer to account for
+                    // rounding and quantization error in case N=1.
+                    //
+                    if (ec < 0 || elapsed >= ((2*ec + 1)*m_T1p5/3 + quantization_rounding_count))
                     {
                         // if so, reset the timer and enter the 'dump' state.
                         m_last_ticks = m_timer->ticks();
