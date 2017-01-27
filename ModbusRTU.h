@@ -17,6 +17,9 @@ namespace ModbusPotato
     class CModbusRTU : public IFramer
     {
     public:
+        static constexpr unsigned int default_3t5_period = 1750; // T3.5 character timeout for high baud rates, in microseconds
+        static constexpr unsigned int default_1t5_period = 750; // T1.5 character timeout for high baud rates, in microseconds
+
         /// <summary>
         /// Constructor for the RTU framer.
         /// </summary>
@@ -29,8 +32,13 @@ namespace ModbusPotato
         /// Notice that this method does NOT setup the serial link (i.e.
         /// Serial.begin(...)).  The baud rate is only needed to calculate
         /// the inter-character delays.
+        ///
+        /// When inter_frame_delay (inter_char_delay) is 0, the inter-frame
+        /// (inter-character) delay is calculated according to the baud rate
+        /// parameter. On the other hand, the delay is manually set to value
+        /// in microseconds.
         /// </remarks>
-        void setup(unsigned long baud);
+        void setup(unsigned long baud, unsigned int inter_frame_delay = 0 /* us */, unsigned int inter_char_delay = 0 /* us */);
 
         unsigned long poll();
         bool begin_send();
@@ -43,8 +51,6 @@ namespace ModbusPotato
         {
             CRC_LEN = 2,
             default_baud_rate = 19200,
-            default_3t5_period = 1750, // T3.5 character timeout for high baud rates, in microseconds
-            default_1t5_period = 750, // T1.5 character timeout for high baud rates, in microseconds
             minimum_tick_count = 2,
             quantization_rounding_count = 2,
             min_pdu_length = 3, // minimum PDU length, excluding the station address. function code and two crc bytes

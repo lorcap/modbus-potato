@@ -69,16 +69,25 @@ namespace ModbusPotato
         m_last_ticks = m_timer->ticks();
     }
 
-    void CModbusRTU::setup(unsigned long baud)
+    void CModbusRTU::setup(unsigned long baud, unsigned int inter_frame_delay, unsigned int inter_char_delay)
     {
         // calculate the intercharacter delays in microseconds
-        unsigned int t3p5 = default_3t5_period;
-        unsigned int t1p5 = default_1t5_period;
-        if (baud && baud <= 19200)
-        {
-            t3p5 = CALC_INTER_CHAR_DELAY(3500000, baud);
-            t1p5 = CALC_INTER_CHAR_DELAY(1500000, baud);
-        }
+        unsigned int t3p5;
+        unsigned int t1p5;
+
+        if (inter_frame_delay == 0)
+                t3p5 = (baud && baud <= 19200)
+                     ? CALC_INTER_CHAR_DELAY(3500000, baud)
+                     : default_3t5_period;
+        else
+                t3p5 = inter_frame_delay;
+
+        if (inter_char_delay == 0)
+                t1p5 = (baud && baud <= 19200)
+                     ? CALC_INTER_CHAR_DELAY(1500000, baud)
+                     : default_1t5_period;
+        else
+                t1p5 = inter_char_delay;
 
         // convert the intercharacter delays from microseconds to system ticks
         //
