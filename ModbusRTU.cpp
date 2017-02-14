@@ -28,10 +28,10 @@ namespace ModbusPotato
     static_assert(ELAPSED(~(system_tick_t)0, 0) == 1, "elapsed time roll-over check failed");
     #endif
 
-    // accumulate the next byte of the CRC
-    enum { POLY = 0xa001 };
     static inline uint16_t crc16_modbus(uint16_t crc, const uint8_t* buffer, size_t len)
     {
+        static constexpr uint16_t POLY = 0xa001;
+
         for (; len; buffer++, len--)
         {
             crc ^= *buffer;
@@ -55,6 +55,7 @@ namespace ModbusPotato
         ,   m_last_ticks()
         ,   m_T3p5()
         ,   m_T1p5()
+        ,   m_crc16_calc(&crc16_modbus)
     {
         if (!m_stream || !m_timer || !m_buffer || m_buffer_max < 3)
         {
@@ -69,7 +70,7 @@ namespace ModbusPotato
         m_last_ticks = m_timer->ticks();
     }
 
-    void CModbusRTU::setup(unsigned long baud, unsigned int inter_frame_delay, unsigned int inter_char_delay)
+    void CModbusRTU::setup(unsigned long baud, unsigned int inter_frame_delay, unsigned int inter_char_delay, Crc16CalcFunc crc16_calc)
     {
         // calculate the intercharacter delays in microseconds
         unsigned int t3p5;
@@ -114,6 +115,10 @@ namespace ModbusPotato
                 m_T3p5 = minimum_tick_count;
         if (m_T1p5 < minimum_tick_count)
                 m_T1p5 = minimum_tick_count;
+
+        // custom CRC16 calculation function
+        if (crc16_calc != nullptr)
+                m_crc16_calc = crc16_calc;
     }
 
     unsigned long CModbusRTU::poll()
@@ -211,7 +216,7 @@ idle:
                     }
 
                     // initialize the CRC and accumulate the frame address
-                    m_checksum = crc16_modbus(0xffff, &m_frame_address, 1);
+                    m_checksum = m_crc16_calc(0xffff, &m_frame_address, 1);
 
                     // broadcast or station address match, enter the receiving state
                     m_state = state_receive;
@@ -272,7 +277,7 @@ receive:
                     }
 
                     // update the CRC and advance the buffer pointer
-                    m_checksum = crc16_modbus(m_checksum, m_buffer + m_buffer_len, ec);
+                    m_checksum = m_crc16_calc(m_checksum, m_buffer + m_buffer_len, ec);
                     m_buffer_len += ec;
 
                     // reset the timer
@@ -372,7 +377,7 @@ receive:
                     }
 
                     // address sent; update the CRC while we send the frame address and move to the 'TX PDU' state
-                    m_checksum = crc16_modbus(0xffff, &m_frame_address, 1);
+                    m_checksum = m_crc16_calc(0xffff, &m_frame_address, 1);
                     m_state = state_tx_pdu;
                     m_buffer_tx_pos = 0;
                     goto tx_pdu;
@@ -395,7 +400,7 @@ tx_pdu:
                     }
 
                     // update the CRC while we send the bytes and advance the buffer tx position
-                    m_checksum = crc16_modbus(m_checksum, m_buffer + m_buffer_tx_pos, ec);
+                    m_checksum = m_crc16_calc(m_checksum, m_buffer + m_buffer_tx_pos, ec);
                     m_buffer_tx_pos += ec;
                 }
 

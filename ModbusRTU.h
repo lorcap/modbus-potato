@@ -20,6 +20,8 @@ namespace ModbusPotato
         static constexpr unsigned int default_3t5_period = 1750; // T3.5 character timeout for high baud rates, in microseconds
         static constexpr unsigned int default_1t5_period = 750; // T1.5 character timeout for high baud rates, in microseconds
 
+        using Crc16CalcFunc = uint16_t (*)(uint16_t crc, const uint8_t* buffer, size_t len);
+
         /// <summary>
         /// Constructor for the RTU framer.
         /// </summary>
@@ -38,7 +40,7 @@ namespace ModbusPotato
         /// parameter. On the other hand, the delay is manually set to value
         /// in microseconds.
         /// </remarks>
-        void setup(unsigned long baud, unsigned int inter_frame_delay = 0 /* us */, unsigned int inter_char_delay = 0 /* us */);
+        void setup(unsigned long baud, unsigned int inter_frame_delay = 0 /* us */, unsigned int inter_char_delay = 0 /* us */, Crc16CalcFunc crc16_calc = nullptr);
 
         unsigned long poll();
         bool begin_send();
@@ -75,6 +77,7 @@ namespace ModbusPotato
         state_type m_state;
         system_tick_t m_last_ticks;
         system_tick_t m_T3p5, m_T1p5;
+        Crc16CalcFunc m_crc16_calc;
     };
 }
 #endif
