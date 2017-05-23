@@ -161,9 +161,9 @@ namespace ModbusPotato
             return m_handler->read_input_registers_rsp(m_starting_register, count/2, (uint16_t *) buffer);
     }
 
-    template <typename ITER>
-    bool CModbusMaster::write_registers_req(const enum function_code::function_code func, const uint8_t slave, const uint16_t address, const size_t n, const ITER begin, const ITER end)
+    bool CModbusMaster::write_registers_req(const enum function_code::function_code func, const uint8_t slave, const uint16_t address, const uint16_t* begin, const uint16_t* end)
     {
+        const size_t n = end - begin;
         const size_t len = 1                    // function
                          + 2                    // address
                          + (n != 1 ? 2+1 : 0)   // number of data
@@ -184,7 +184,7 @@ namespace ModbusPotato
             *buffer++ = (uint8_t) n;
             *buffer++ = (uint8_t) 2*n;
         }
-        for (ITER i = begin; i != end; ++i)
+        for (const uint16_t* i = begin; i != end; ++i)
         {
             *buffer++ = (uint8_t) (*i >> 8);
             *buffer++ = (uint8_t) *i;
@@ -193,8 +193,6 @@ namespace ModbusPotato
         send_and_wait(slave, address, len);
         return true;
     }
-    template
-    bool CModbusMaster::write_registers_req<const unsigned short*>(const enum function_code::function_code func, const uint8_t slave, const uint16_t address, const size_t n, const unsigned short* begin, const unsigned short* end);
 
     bool CModbusMaster::write_registers_rsp(IFramer* framer, bool single)
     {

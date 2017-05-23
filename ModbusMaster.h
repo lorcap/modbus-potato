@@ -26,21 +26,20 @@ namespace ModbusPotato
         inline bool write_single_register_req(const uint8_t slave, const uint16_t address, const uint16_t value)
         {
             const std::initializer_list<uint16_t> data = {value};
-            return write_registers_req(function_code::write_single_register, slave, address, 1, data.begin(), data.end());
+            return write_registers_req(function_code::write_single_register, slave, address, data.begin(), data.end());
         }
         bool write_multiple_coils_req(void);
         inline bool write_multiple_registers_req(const uint8_t slave, const uint16_t address, const std::initializer_list<uint16_t> data)
         {
-            return write_multiple_registers_req(slave, address, data.size(), data.begin(), data.end());
+            return write_multiple_registers_req(slave, address, data.begin(), data.end());
         }
         inline bool write_multiple_registers_req(const uint8_t slave, const uint16_t address, const size_t n, const uint16_t data[])
         {
-            return write_multiple_registers_req(slave, address, n, &data[0], &data[n]);
+            return write_multiple_registers_req(slave, address, &data[0], &data[n]);
         }
-        template <typename ITER>
-        inline bool write_multiple_registers_req(const uint8_t slave, const uint16_t address, const size_t n, const ITER begin, const ITER end)
+        inline bool write_multiple_registers_req(const uint8_t slave, const uint16_t address, const uint16_t* begin, const uint16_t* end)
         {
-            return write_registers_req(function_code::write_multiple_registers, slave, address, n, begin, end);
+            return write_registers_req(function_code::write_multiple_registers, slave, address, begin, end);
         }
 
         void poll(void);
@@ -70,8 +69,7 @@ namespace ModbusPotato
         bool read_registers_req(const enum function_code::function_code func, const uint8_t slave, const uint16_t address, const uint16_t n);
         bool read_registers_rsp(IFramer* framer, bool holding);
 
-        template <typename ITER>
-        bool write_registers_req(const enum function_code::function_code func, const uint8_t slave, const uint16_t address, const size_t n, const ITER begin, const ITER end);
+        bool write_registers_req(const enum function_code::function_code func, const uint8_t slave, const uint16_t address, const uint16_t* begin, const uint16_t* end);
         bool write_registers_rsp(IFramer* framer, bool single);
 
         bool sanity_check(const size_t n, const size_t len);
