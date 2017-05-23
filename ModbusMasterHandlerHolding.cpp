@@ -18,8 +18,8 @@ namespace ModbusPotato
             return false;
 
         // copy in the values
-        for (; n; ++address, --n)
-            m_array[address] = ntohs(*values++);
+        while (n--)
+            m_array[address++] = *values++;
 
         return true;
     }

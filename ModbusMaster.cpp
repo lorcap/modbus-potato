@@ -155,10 +155,19 @@ namespace ModbusPotato
         if (count % 2 != 0)
             return false;
 
+        count /= 2;
+        uint16_t *const data = (uint16_t*) buffer;
+
+        if (ntohs(0x00ffu) != 0x00ffu)
+        {
+            for (int i = 0; i < count; ++i)
+                data[i] = ntohs(data[i]);
+        }
+
         if (holding)
-            return m_handler->read_holding_registers_rsp(m_starting_register, count/2, (uint16_t *) buffer);
+            return m_handler->read_holding_registers_rsp(m_starting_register, count, data);
         else
-            return m_handler->read_input_registers_rsp(m_starting_register, count/2, (uint16_t *) buffer);
+            return m_handler->read_input_registers_rsp(m_starting_register, count, data);
     }
 
     bool CModbusMaster::write_registers_req(const enum function_code::function_code func, const uint8_t slave, const uint16_t address, const uint16_t* begin, const uint16_t* end)
@@ -186,8 +195,10 @@ namespace ModbusPotato
         }
         for (const uint16_t* i = begin; i != end; ++i)
         {
-            *buffer++ = (uint8_t) (*i >> 8);
-            *buffer++ = (uint8_t) *i;
+            const uint16_t d = htons(*i);
+
+            *buffer++ = (uint8_t) (d >> 8);
+            *buffer++ = (uint8_t) d;
         }
 
         send_and_wait(slave, address, len);
