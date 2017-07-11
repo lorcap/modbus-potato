@@ -588,6 +588,22 @@ namespace ModbusPotato
         }
 
         /// <summary>
+        /// Handles Modbus function 0x17: Read Write Multiple Registers.
+        /// </summary>
+        /**
+         * @param read_address   read start address
+         * @param read_n         number of read registers
+         * @param read_values    read values to store
+         * @param write_address  write start address
+         * @param write_n        number of written registers
+         * @return true, when successful, false otherwise
+         */
+        virtual bool read_write_multiple_registers_rsp(uint16_t read_address, size_t read_n, const uint16_t* read_values, uint16_t write_address, size_t write_n) {
+            return this->write_multiple_registers_rsp(write_address, write_n)
+                && this->read_holding_registers_rsp(read_address, read_n, read_values);
+        }
+
+        /// <summary>
         /// Slave didn't respond on time.
         /// </summary>
         virtual bool response_time_out(void) {
