@@ -9,7 +9,7 @@ namespace ModbusPotato
         ,   m_state(state::idle)
         ,   m_timer()
         ,   m_slave_address()
-        ,   m_starting_register()
+        ,   m_read_starting_address()
         ,   m_write_starting_address()
         ,   m_write_n()
     {
@@ -145,7 +145,8 @@ namespace ModbusPotato
         *buffer++ = (uint8_t) (n >> 8);
         *buffer++ = (uint8_t) (n >> 0);
 
-        send_and_wait(slave, address, len);
+        m_read_starting_address = address;
+        send_and_wait(slave, len);
         return true;
     }
 
@@ -172,13 +173,13 @@ namespace ModbusPotato
         switch (func)
         {
         case function_code::read_holding_registers:
-            return m_handler->read_holding_registers_rsp(m_starting_register, count, data);
+            return m_handler->read_holding_registers_rsp(m_read_starting_address, count, data);
             break;
         case function_code::read_input_registers:
-            return m_handler->read_input_registers_rsp(m_starting_register, count, data);
+            return m_handler->read_input_registers_rsp(m_read_starting_address, count, data);
             break;
         case function_code::read_write_multiple_registers:
-            return m_handler->read_write_multiple_registers_rsp(m_starting_register, count, data, m_write_starting_address, m_write_n);
+            return m_handler->read_write_multiple_registers_rsp(m_read_starting_address, count, data, m_write_starting_address, m_write_n);
             break;
         default:
             return false;
@@ -216,7 +217,8 @@ namespace ModbusPotato
             *buffer++ = (uint8_t) d;
         }
 
-        send_and_wait(slave, address, len);
+        m_write_starting_address = address;
+        send_and_wait(slave, len);
         return true;
     }
 
@@ -279,9 +281,10 @@ namespace ModbusPotato
             *buffer++ = (uint8_t) d;
         }
 
+        m_read_starting_address  = read_address;
         m_write_starting_address = write_address;
         m_write_n                = write_n;
-        send_and_wait(slave, read_address, len);
+        send_and_wait(slave, len);
         return true;
     }
 
@@ -299,7 +302,7 @@ namespace ModbusPotato
         return true;
     }
 
-    void CModbusMaster::send_and_wait(uint8_t slave, uint16_t address, size_t len)
+    void CModbusMaster::send_and_wait(uint8_t slave, size_t len)
     {
         // send buffer
         m_framer->set_buffer_len(len);
@@ -308,7 +311,6 @@ namespace ModbusPotato
         // update state
         m_timer = m_time_provider->ticks();
         m_slave_address = slave;
-        m_starting_register = address;
         m_state = (slave == 0)
                 ? state::waiting_turnaround_reply
                 : state::waiting_for_reply;

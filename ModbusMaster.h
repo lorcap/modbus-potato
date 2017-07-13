@@ -88,7 +88,7 @@ namespace ModbusPotato
         enum state m_state;
         system_tick_t m_timer;
         uint16_t m_slave_address;
-        uint16_t m_starting_register;
+        uint16_t m_read_starting_address;
         uint16_t m_write_starting_address;
         uint16_t m_write_n;
 
@@ -101,6 +101,6 @@ namespace ModbusPotato
         bool read_write_registers_req(const enum function_code::function_code func, const uint8_t slave, const uint16_t read_address, const uint16_t read_n, const uint16_t write_address, const uint16_t* write_begin, const uint16_t* write_end);
 
         bool sanity_check(const size_t n, const size_t len);
-        void send_and_wait(uint8_t slave, uint16_t address, size_t len);
+        void send_and_wait(uint8_t slave, size_t len);
 };
 }
