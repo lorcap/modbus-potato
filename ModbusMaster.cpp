@@ -211,10 +211,8 @@ namespace ModbusPotato
         }
         for (const uint16_t* i = begin; i != end; ++i)
         {
-            const uint16_t d = htons(*i);
-
-            *buffer++ = (uint8_t) (d >> 8);
-            *buffer++ = (uint8_t) d;
+            *buffer++ = (uint8_t) (*i >> 8);
+            *buffer++ = (uint8_t) *i;
         }
 
         m_write_starting_address = address;
@@ -275,10 +273,8 @@ namespace ModbusPotato
         *buffer++ = (uint8_t) 2*write_n;
         for (const uint16_t* i = write_begin; i != write_end; ++i)
         {
-            const uint16_t d = htons(*i);
-
-            *buffer++ = (uint8_t) (d >> 8);
-            *buffer++ = (uint8_t) d;
+                *buffer++ = (uint8_t) (*i >> 8);
+                *buffer++ = (uint8_t) *i;
         }
 
         m_read_starting_address  = read_address;
