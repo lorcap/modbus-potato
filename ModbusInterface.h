@@ -154,12 +154,12 @@ namespace ModbusPotato
         IFramer(IStream* stream, ITimeProvider* timer, uint8_t* buffer, size_t buffer_max)
             :   m_stream(stream)
             ,   m_timer(timer)
-            ,   m_buffer(buffer)
-            ,   m_buffer_max(buffer_max)
-            ,   m_buffer_len()
             ,   m_handler()
             ,   m_station_address()
             ,   m_frame_address()
+            ,   m_buffer(buffer)
+            ,   m_buffer_len()
+            ,   m_buffer_max(buffer_max)
         {}
 
         virtual ~IFramer() {}
