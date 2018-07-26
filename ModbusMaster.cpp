@@ -133,7 +133,7 @@ namespace ModbusPotato
                          + 2                    // address
                          + 2;                   // number of data
 
-        if (!sanity_check(n, len))
+        if (!sanity_check(n, 0x7d, len))
             return false;
 
         // make request frame
@@ -194,7 +194,7 @@ namespace ModbusPotato
                          + (n != 1 ? 2+1 : 0)   // number of data
                          + 2*n;                 // data
 
-        if (!sanity_check(n, len))
+        if (!sanity_check(n, 0x7b, len))
             return false;
 
         // make request frame
@@ -255,7 +255,9 @@ namespace ModbusPotato
                          + 1            // write byte count
                          + 2*write_n;   // write registers value
 
-        if (!sanity_check(read_n, len))
+        if ((read_n < 0x0001) or (0x7d < read_n))
+            return false;
+        if (!sanity_check(write_n, 0x79, len))
             return false;
 
         // make request frame
@@ -284,11 +286,11 @@ namespace ModbusPotato
         return true;
     }
 
-    bool CModbusMaster::sanity_check(const size_t n, const size_t len)
+    bool CModbusMaster::sanity_check(const size_t n, const size_t n_max, const size_t len)
     {
         if (this->m_state != state::idle)
             return false;
-        if ((n < 0x0001 ) || (0x007b < n))
+        if ((n < 0x0001) || (n_max < n))
             return false;
         if (m_framer->buffer_max() < len)
             return false;
