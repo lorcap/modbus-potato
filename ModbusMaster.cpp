@@ -288,7 +288,7 @@ namespace ModbusPotato
     {
         if (this->m_state != state::idle)
             return false;
-        if ((0x0001 < n) && (n > 0x007b))
+        if ((n < 0x0001 ) || (0x007b < n))
             return false;
         if (m_framer->buffer_max() < len)
             return false;
