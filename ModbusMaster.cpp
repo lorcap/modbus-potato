@@ -249,7 +249,7 @@ namespace ModbusPotato
         const size_t write_n = write_end - write_begin;
         const size_t len = 1            // function code
                          + 2            // read starting address
-                         + read_n       // quantity to read
+                         + 2            // quantity to read
                          + 2            // write starting address
                          + 2            // quantity to write
                          + 1            // write byte count
