@@ -191,7 +191,8 @@ namespace ModbusPotato
         const size_t n = end - begin;
         const size_t len = 1                    // function
                          + 2                    // address
-                         + (n != 1 ? 2+1 : 0)   // number of data
+                         + (func == function_code::write_multiple_registers ? 2+1 : 0)
+                                                // number of data
                          + 2*n;                 // data
 
         if (!sanity_check(n, 0x7b, len))
