@@ -76,7 +76,7 @@ namespace ModbusPotato
         };
         state_type m_state;
         system_tick_t m_last_ticks;
-        system_tick_t m_T3p5, m_T1p5;
+        system_tick_t m_T3p5, m_T3p5_tx, m_T1p5;
         Crc16CalcFunc m_crc16_calc;
     };
 }

@@ -74,8 +74,13 @@ namespace ModbusPotato
     void CModbusRTU::setup(unsigned long baud, unsigned int inter_frame_delay, unsigned int inter_char_delay, Crc16CalcFunc crc16_calc)
     {
         // calculate the intercharacter delays in microseconds
+        unsigned int t3p5_tx;
         unsigned int t3p5;
         unsigned int t1p5;
+
+        t3p5_tx = (baud && baud <= 19200)
+                ? CALC_INTER_CHAR_DELAY(3500000, baud)
+                : default_3t5_period;
 
         if (inter_frame_delay == 0)
                 t3p5 = (baud && baud <= 19200)
@@ -108,10 +113,13 @@ namespace ModbusPotato
         // the end of the time period) and 4ms (if the start time was latched
         // at the start of the time period.  
         //
-        m_T3p5 = t3p5 / m_timer->microseconds_per_tick();
-        m_T1p5 = t1p5 / m_timer->microseconds_per_tick();
+        m_T3p5_tx = t3p5_tx / m_timer->microseconds_per_tick();
+        m_T3p5    = t3p5    / m_timer->microseconds_per_tick();
+        m_T1p5    = t1p5    / m_timer->microseconds_per_tick();
 
         // make sure the delays are each at least 2 counts
+        if (m_T3p5_tx < minimum_tick_count)
+                m_T3p5_tx = minimum_tick_count;
         if (m_T3p5 < minimum_tick_count)
                 m_T3p5 = minimum_tick_count;
         if (m_T1p5 < minimum_tick_count)
@@ -486,8 +494,8 @@ tx_wait:
             {
                 // check if the T3.5 timer has elapsed
                 system_tick_t elapsed = ELAPSED(m_last_ticks, m_timer->ticks());
-                if (elapsed < m_T3p5)
-                    return m_T3p5 - elapsed; // wait for the timer to elapse
+                if (elapsed < m_T3p5_tx)
+                    return m_T3p5_tx - elapsed; // wait for the timer to elapse
 
                 // TX done! go to the idle state
                 m_state = state_idle;
