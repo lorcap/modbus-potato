@@ -1,4 +1,5 @@
 #include "ModbusRTU.h"
+#include "ModbusUtil.h"
 #ifdef _MSC_VER
 #undef max
 #endif
@@ -295,7 +296,8 @@ receive:
                 }
 
                 // check if the T3.5 timer has elapsed
-                if (elapsed < m_T3p5)
+                if (m_buffer_len < pdu_len(m_station_address, m_buffer, m_buffer_len)
+                &&  elapsed < m_T3p5)
                     return m_T3p5 - elapsed; // wait for the timer to elapse
 
                 // check the CRC
