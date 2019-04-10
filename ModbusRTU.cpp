@@ -360,21 +360,6 @@ receive:
                     goto dump; // dump any remaining data
                 }
 
-                // Wait for the full time delay.
-                //
-                // We must wait an additional two counts after the last T3.5 to
-                // ensure that we have waited the full timeout due to rounding
-                // error as well as the quantization error of the system clock.
-                //
-                // Please be aware that this assumes that the system clock will
-                // not roll over between calls to send().  However, even if it
-                // does, the worse case will be an additional T3.5 + 2 count
-                // delay.
-                //
-                system_tick_t elapsed = ELAPSED(m_last_ticks, m_timer->ticks());
-                if (elapsed < (m_T3p5 + quantization_rounding_count))
-                    return m_T3p5 + quantization_rounding_count - elapsed; // waiting to send
-
                 // try and write the remote station address
                 if (int ec = m_stream->write(&m_frame_address, 1))
                 {
