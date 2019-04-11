@@ -1,4 +1,5 @@
 #include "ModbusMaster.h"
+#include "ModbusUtil.h"
 
 namespace ModbusPotato
 {
@@ -129,9 +130,7 @@ namespace ModbusPotato
 
     bool CModbusMaster::read_registers_req(const enum function_code::function_code func, const uint8_t slave, const uint16_t address, const uint16_t n)
     {
-        const size_t len = 1                    // function
-                         + 2                    // address
-                         + 2;                   // number of data
+        const size_t len = pdu_len_req(func) - PDU_LEN_CRC;
 
         if (!sanity_check(n, 0x7d, len))
             return false;
@@ -189,11 +188,7 @@ namespace ModbusPotato
     bool CModbusMaster::write_registers_req(const enum function_code::function_code func, const uint8_t slave, const uint16_t address, const uint16_t* begin, const uint16_t* end)
     {
         const size_t n = end - begin;
-        const size_t len = 1                    // function
-                         + 2                    // address
-                         + (func == function_code::write_multiple_registers ? 2+1 : 0)
-                                                // number of data
-                         + 2*n;                 // data
+        const size_t len = pdu_len_req(func, 2*n) - PDU_LEN_CRC;
 
         if (!sanity_check(n, 0x7b, len))
             return false;
@@ -248,13 +243,7 @@ namespace ModbusPotato
         (void) func;
 
         const size_t write_n = write_end - write_begin;
-        const size_t len = 1            // function code
-                         + 2            // read starting address
-                         + 2            // quantity to read
-                         + 2            // write starting address
-                         + 2            // quantity to write
-                         + 1            // write byte count
-                         + 2*write_n;   // write registers value
+        const size_t len = pdu_len_req(func, 2*write_n) - PDU_LEN_CRC;
 
         if ((read_n < 0x0001) or (0x7d < read_n))
             return false;
