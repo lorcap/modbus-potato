@@ -620,6 +620,13 @@ namespace ModbusPotato
         virtual bool exception_response(enum modbus_exception_code::modbus_exception_code) {
             return true;
         }
+
+        /// <summary>
+        /// Processing the frame didn't succeed.
+        /// </summary>
+        virtual bool processing_error(void) {
+            return true;
+        }
     };
 }
 #endif

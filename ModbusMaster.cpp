@@ -122,6 +122,9 @@ namespace ModbusPotato
             break;
         }
 
+        if (ret == false)
+            ret = m_handler->processing_error();
+
         m_state = (ret == true) ? state::idle : state::processing_error;
 
     finish:
