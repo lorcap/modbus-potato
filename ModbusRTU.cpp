@@ -268,6 +268,13 @@ receive:
                 // check if there are any waiting characters
                 if (int ec = m_stream->read(m_buffer + m_buffer_len, m_buffer_max - m_buffer_len))
                 {
+                    // update the CRC and advance the buffer pointer
+                    if (ec > 0)
+                    {
+                        m_checksum = m_crc16_calc(m_checksum, m_buffer + m_buffer_len, ec);
+                        m_buffer_len += ec;
+                    }
+
                     // check for comm errors or if the inter-character delay has been exceeded
                     //
                     // Note: if T1p0 = 2/3*T1p5 is the character time, we wait
@@ -277,17 +284,15 @@ receive:
                     // Note: we must add two to the timer to account for
                     // rounding and quantization error in case N=1.
                     //
-                    if (ec < 0 || elapsed >= ((2*ec + 1)*m_T1p5/3 + quantization_rounding_count))
+                    if (ec < 0
+                    ||  (elapsed >= ((2*ec + 1)*m_T1p5/3 + quantization_rounding_count) &&
+                         pdu_short_()) )
                     {
                         // if so, reset the timer and enter the 'dump' state.
                         m_last_ticks = m_timer->ticks();
                         m_state = state_dump;
                         goto dump; // enter the dump state
                     }
-
-                    // update the CRC and advance the buffer pointer
-                    m_checksum = m_crc16_calc(m_checksum, m_buffer + m_buffer_len, ec);
-                    m_buffer_len += ec;
 
                     // reset the timer
                     m_last_ticks = m_timer->ticks();
