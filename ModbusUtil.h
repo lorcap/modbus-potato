@@ -13,6 +13,7 @@ constexpr int PDU_LEN_CRC        = 2;
 
 /* --- general PDU length ------------------------------------------------ */
 
+extern bool pdu_short (uint8_t station_address, const uint8_t* buffer, size_t buffer_len);
 extern size_t pdu_len (uint8_t station_address, const uint8_t* buffer, size_t buffer_len);
 
 /* --- request PDU length ------------------------------------------------ */

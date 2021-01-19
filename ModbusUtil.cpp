@@ -2,6 +2,16 @@
 namespace ModbusPotato
 {
 
+bool
+pdu_short (uint8_t station_address,
+           const uint8_t* buffer,
+           size_t buffer_len)
+{
+    const size_t len = pdu_len(station_address, buffer, buffer_len);
+
+    return len <= 0 || buffer_len < len;
+}
+
 size_t
 pdu_len (uint8_t station_address,
          const uint8_t* buffer,
