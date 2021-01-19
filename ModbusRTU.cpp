@@ -304,8 +304,7 @@ receive:
                 }
 
                 // check if the T3.5 timer has elapsed
-                if (m_buffer_len < pdu_len(m_station_address, m_buffer, m_buffer_len)
-                &&  elapsed < m_T3p5)
+                if (pdu_short_() && elapsed < m_T3p5)
                     return m_T3p5 - elapsed; // wait for the timer to elapse
 
                 // check the CRC
@@ -581,5 +580,10 @@ tx_wait:
                 return; // invalid state - enter the 'exception' state
             }
         }
+    }
+
+    size_t CModbusRTU::pdu_short_ () const
+    {
+            return pdu_short(m_station_address, m_buffer, m_buffer_len);
     }
 }

@@ -78,6 +78,7 @@ namespace ModbusPotato
         system_tick_t m_last_ticks;
         system_tick_t m_T3p5, m_T3p5_tx, m_T1p5;
         Crc16CalcFunc m_crc16_calc;
+        size_t pdu_short_ () const;
     };
 }
 #endif
