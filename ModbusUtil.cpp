@@ -4,7 +4,7 @@ namespace ModbusPotato
 
 size_t
 pdu_len (uint8_t station_address,
-         uint8_t* buffer,
+         const uint8_t* buffer,
          size_t buffer_len)
 {
     return (station_address != 0)
@@ -15,7 +15,7 @@ pdu_len (uint8_t station_address,
 /* ----------------------------------------------------------------------- */
 
 size_t
-pdu_len_req (uint8_t* buffer,
+pdu_len_req (const uint8_t* buffer,
              size_t buffer_len)
 {
     if (buffer_len == 0)
@@ -43,7 +43,7 @@ pdu_len_req (uint8_t* buffer,
 }
 
 size_t
-pdu_len_rsp (uint8_t* buffer,
+pdu_len_rsp (const uint8_t* buffer,
              size_t buffer_len)
 {
     if (buffer_len == 0)

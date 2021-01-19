@@ -13,11 +13,11 @@ constexpr int PDU_LEN_CRC        = 2;
 
 /* --- general PDU length ------------------------------------------------ */
 
-extern size_t pdu_len (uint8_t station_address, uint8_t* buffer, size_t buffer_len);
+extern size_t pdu_len (uint8_t station_address, const uint8_t* buffer, size_t buffer_len);
 
 /* --- request PDU length ------------------------------------------------ */
 
-extern size_t pdu_len_req (uint8_t* buffer, size_t buffer_len);
+extern size_t pdu_len_req (const uint8_t* buffer, size_t buffer_len);
 extern size_t pdu_len_req (function_code::function_code func, size_t byte_count = 0);
 
 inline size_t pdu_len_req_read_coil_status ()
@@ -70,7 +70,7 @@ inline size_t pdu_len_req_read_write_multiple_registers (int byte_count)
 
 /* --- response PDU length ----------------------------------------------- */
 
-extern size_t pdu_len_rsp (uint8_t* buffer, size_t buffer_len);
+extern size_t pdu_len_rsp (const uint8_t* buffer, size_t buffer_len);
 extern size_t pdu_len_rsp (function_code::function_code func, size_t byte_count = 0);
 
 inline size_t pdu_len_rsp_read_coil_status (int byte_count)
