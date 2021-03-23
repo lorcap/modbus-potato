@@ -107,7 +107,7 @@ namespace ModbusPotato
         /// Returns the number of ticks since an arbitrary epoch point
         /// </summary>
         /// <remarks>
-        /// The clock must increment monotomically and must roll over at the
+        /// The clock must increment monotonically and must roll over at the
         /// maximum size of system_tick_t to 0.  system_tick_t must be an
         /// unsigned integer of an arbitrary size.
         ///
