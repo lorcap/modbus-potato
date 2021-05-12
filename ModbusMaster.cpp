@@ -1,4 +1,5 @@
 #include "ModbusMaster.h"
+#include "ModbusUtil.h"
 
 namespace ModbusPotato
 {
@@ -9,7 +10,9 @@ namespace ModbusPotato
         ,   m_state(state::idle)
         ,   m_timer()
         ,   m_slave_address()
-        ,   m_starting_register()
+        ,   m_read_starting_address()
+        ,   m_write_starting_address()
+        ,   m_write_n()
     {
          m_response_time_out = response_time_out * 1000
                              / m_time_provider->microseconds_per_tick();
@@ -90,10 +93,10 @@ namespace ModbusPotato
             m_handler->read_discrete_inputs_rsp(framer);
             break;
         case function_code::read_holding_registers:
-            ret = read_registers_rsp(framer, true);
+            ret = read_registers_rsp(framer, function_code::read_holding_registers);
             break;
         case function_code::read_input_registers:
-            ret = read_registers_rsp(framer, false);
+            ret = read_registers_rsp(framer, function_code::read_input_registers);
             break;
         case function_code::write_single_coil:
             ret = m_handler->write_single_coil_rsp(framer);
@@ -107,6 +110,9 @@ namespace ModbusPotato
         case function_code::write_multiple_registers:
             ret = write_registers_rsp(framer, false);
             break;
+        case function_code::read_write_multiple_registers:
+            ret = read_registers_rsp(framer, function_code::read_write_multiple_registers);
+            break;
         default:
             if (framer->buffer()[0] & 0x80)
             {
@@ -116,6 +122,9 @@ namespace ModbusPotato
             break;
         }
 
+        if (ret == false)
+            ret = m_handler->processing_error();
+
         m_state = (ret == true) ? state::idle : state::processing_error;
 
     finish:
@@ -124,11 +133,9 @@ namespace ModbusPotato
 
     bool CModbusMaster::read_registers_req(const enum function_code::function_code func, const uint8_t slave, const uint16_t address, const uint16_t n)
     {
-        const size_t len = 1                    // function
-                         + 2                    // address
-                         + 2;                   // number of data
+        const size_t len = pdu_len_req(func) - PDU_LEN_CRC;
 
-        if (!sanity_check(n, len))
+        if (!sanity_check(n, 0x7d, len))
             return false;
 
         // make request frame
@@ -140,11 +147,12 @@ namespace ModbusPotato
         *buffer++ = (uint8_t) (n >> 8);
         *buffer++ = (uint8_t) (n >> 0);
 
-        send_and_wait(slave, address, len);
+        m_read_starting_address = address;
+        send_and_wait(slave, len);
         return true;
     }
 
-    bool CModbusMaster::read_registers_rsp(IFramer* framer, bool holding)
+    bool CModbusMaster::read_registers_rsp(IFramer* framer, const enum function_code::function_code func)
     {
         uint8_t* buffer = framer->buffer();
         (void)          *buffer++;      // function code
@@ -155,21 +163,37 @@ namespace ModbusPotato
         if (count % 2 != 0)
             return false;
 
-        if (holding)
-            return m_handler->read_holding_registers_rsp(m_starting_register, count/2, (uint16_t *) buffer);
-        else
-            return m_handler->read_input_registers_rsp(m_starting_register, count/2, (uint16_t *) buffer);
+        count /= 2;
+        uint16_t *const data = (uint16_t*) buffer;
+
+        if (ntohs(0x00ffu) != 0x00ffu)
+        {
+            for (int i = 0; i < count; ++i)
+                data[i] = ntohs(data[i]);
+        }
+
+        switch (func)
+        {
+        case function_code::read_holding_registers:
+            return m_handler->read_holding_registers_rsp(m_read_starting_address, count, data);
+            break;
+        case function_code::read_input_registers:
+            return m_handler->read_input_registers_rsp(m_read_starting_address, count, data);
+            break;
+        case function_code::read_write_multiple_registers:
+            return m_handler->read_write_multiple_registers_rsp(m_read_starting_address, count, data, m_write_starting_address, m_write_n);
+            break;
+        default:
+            return false;
+        }
     }
 
-    template <typename ITER>
-    bool CModbusMaster::write_registers_req(const enum function_code::function_code func, const uint8_t slave, const uint16_t address, const size_t n, const ITER begin, const ITER end)
+    bool CModbusMaster::write_registers_req(const enum function_code::function_code func, const uint8_t slave, const uint16_t address, const uint16_t* begin, const uint16_t* end)
     {
-        const size_t len = 1                    // function
-                         + 2                    // address
-                         + (n != 1 ? 2+1 : 0)   // number of data
-                         + 2*n;                 // data
+        const size_t n = end - begin;
+        const size_t len = pdu_len_req(func, 2*n) - PDU_LEN_CRC;
 
-        if (!sanity_check(n, len))
+        if (!sanity_check(n, 0x7b, len))
             return false;
 
         // make request frame
@@ -184,17 +208,16 @@ namespace ModbusPotato
             *buffer++ = (uint8_t) n;
             *buffer++ = (uint8_t) 2*n;
         }
-        for (ITER i = begin; i != end; ++i)
+        for (const uint16_t* i = begin; i != end; ++i)
         {
             *buffer++ = (uint8_t) (*i >> 8);
             *buffer++ = (uint8_t) *i;
         }
 
-        send_and_wait(slave, address, len);
+        m_write_starting_address = address;
+        send_and_wait(slave, len);
         return true;
     }
-    template
-    bool CModbusMaster::write_registers_req<const unsigned short*>(const enum function_code::function_code func, const uint8_t slave, const uint16_t address, const size_t n, const unsigned short* begin, const unsigned short* end);
 
     bool CModbusMaster::write_registers_rsp(IFramer* framer, bool single)
     {
@@ -216,13 +239,51 @@ namespace ModbusPotato
 
             return m_handler->write_multiple_registers_rsp(address, n);
         }
-}
+    }
 
-    bool CModbusMaster::sanity_check(const size_t n, const size_t len)
+    bool CModbusMaster::read_write_registers_req(const enum function_code::function_code func, const uint8_t slave, const uint16_t read_address, const uint16_t read_n, const uint16_t write_address, const uint16_t* write_begin, const uint16_t* write_end)
+    {
+        (void) func;
+
+        const size_t write_n = write_end - write_begin;
+        const size_t len = pdu_len_req(func, 2*write_n) - PDU_LEN_CRC;
+
+        if ((read_n < 0x0001) or (0x7d < read_n))
+            return false;
+        if (!sanity_check(write_n, 0x79, len))
+            return false;
+
+        // make request frame
+        m_framer->set_frame_address(slave);
+        uint8_t* buffer = m_framer->buffer();
+        *buffer++ = (uint8_t) func;
+        *buffer++ = (uint8_t) (read_address >> 8);
+        *buffer++ = (uint8_t) (read_address >> 0);
+        *buffer++ = (uint8_t) (read_n >> 8);
+        *buffer++ = (uint8_t) (read_n >> 0);
+        *buffer++ = (uint8_t) (write_address >> 8);
+        *buffer++ = (uint8_t) (write_address >> 0);
+        *buffer++ = (uint8_t) (write_n >> 8);
+        *buffer++ = (uint8_t) (write_n >> 0);
+        *buffer++ = (uint8_t) 2*write_n;
+        for (const uint16_t* i = write_begin; i != write_end; ++i)
+        {
+                *buffer++ = (uint8_t) (*i >> 8);
+                *buffer++ = (uint8_t) *i;
+        }
+
+        m_read_starting_address  = read_address;
+        m_write_starting_address = write_address;
+        m_write_n                = write_n;
+        send_and_wait(slave, len);
+        return true;
+    }
+
+    bool CModbusMaster::sanity_check(const size_t n, const size_t n_max, const size_t len)
     {
         if (this->m_state != state::idle)
             return false;
-        if ((0x0001 < n) && (n > 0x007b))
+        if ((n < 0x0001) || (n_max < n))
             return false;
         if (m_framer->buffer_max() < len)
             return false;
@@ -232,7 +293,7 @@ namespace ModbusPotato
         return true;
     }
 
-    void CModbusMaster::send_and_wait(uint8_t slave, uint16_t address, size_t len)
+    void CModbusMaster::send_and_wait(uint8_t slave, size_t len)
     {
         // send buffer
         m_framer->set_buffer_len(len);
@@ -241,7 +302,6 @@ namespace ModbusPotato
         // update state
         m_timer = m_time_provider->ticks();
         m_slave_address = slave;
-        m_starting_register = address;
         m_state = (slave == 0)
                 ? state::waiting_turnaround_reply
                 : state::waiting_for_reply;

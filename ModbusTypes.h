@@ -36,6 +36,7 @@ namespace ModbusPotato
             write_single_register = 0x06,
             write_multiple_coils = 0x0f,
             write_multiple_registers = 0x10,
+            read_write_multiple_registers = 0x17,
         };
     }
 

@@ -1,0 +1,29 @@
+{
+    "name": "Modbus Potato",
+    "version": "1.4.1",
+    "description": "A library for handling modbus communications.",
+    "repository":
+    {
+        "type": "git",
+        "url": "https://github.com/lorcap/modbus-potato"
+    },
+    "authors":
+    [
+        {
+            "name": "Lorenzo Cappelletti",
+            "email": "lcappelletti@opt-ita.com",
+            "url": "https://github.com/lorcap/modbus-potato",
+            "maintainer": true
+        }
+    ],
+    "license": "MIT",
+    "build":
+    {
+        "srcFilter":
+        [
+            "+<.>",
+            "-<extras/>",
+            "-<examples/>"
+        ]
+    }
+}

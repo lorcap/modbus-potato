@@ -107,7 +107,7 @@ namespace ModbusPotato
         /// Returns the number of ticks since an arbitrary epoch point
         /// </summary>
         /// <remarks>
-        /// The clock must increment monotomically and must roll over at the
+        /// The clock must increment monotonically and must roll over at the
         /// maximum size of system_tick_t to 0.  system_tick_t must be an
         /// unsigned integer of an arbitrary size.
         ///
@@ -154,12 +154,12 @@ namespace ModbusPotato
         IFramer(IStream* stream, ITimeProvider* timer, uint8_t* buffer, size_t buffer_max)
             :   m_stream(stream)
             ,   m_timer(timer)
-            ,   m_buffer(buffer)
-            ,   m_buffer_max(buffer_max)
-            ,   m_buffer_len()
             ,   m_handler()
             ,   m_station_address()
             ,   m_frame_address()
+            ,   m_buffer(buffer)
+            ,   m_buffer_len()
+            ,   m_buffer_max(buffer_max)
         {}
 
         virtual ~IFramer() {}
@@ -588,6 +588,22 @@ namespace ModbusPotato
         }
 
         /// <summary>
+        /// Handles Modbus function 0x17: Read Write Multiple Registers.
+        /// </summary>
+        /**
+         * @param read_address   read start address
+         * @param read_n         number of read registers
+         * @param read_values    read values to store
+         * @param write_address  write start address
+         * @param write_n        number of written registers
+         * @return true, when successful, false otherwise
+         */
+        virtual bool read_write_multiple_registers_rsp(uint16_t read_address, size_t read_n, const uint16_t* read_values, uint16_t write_address, size_t write_n) {
+            return this->write_multiple_registers_rsp(write_address, write_n)
+                && this->read_holding_registers_rsp(read_address, read_n, read_values);
+        }
+
+        /// <summary>
         /// Slave didn't respond on time.
         /// </summary>
         virtual bool response_time_out(void) {
@@ -602,6 +618,13 @@ namespace ModbusPotato
          * @return
          */
         virtual bool exception_response(enum modbus_exception_code::modbus_exception_code) {
+            return true;
+        }
+
+        /// <summary>
+        /// Processing the frame didn't succeed.
+        /// </summary>
+        virtual bool processing_error(void) {
             return true;
         }
     };

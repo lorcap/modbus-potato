@@ -26,21 +26,44 @@ namespace ModbusPotato
         inline bool write_single_register_req(const uint8_t slave, const uint16_t address, const uint16_t value)
         {
             const std::initializer_list<uint16_t> data = {value};
-            return write_registers_req(function_code::write_single_register, slave, address, 1, data.begin(), data.end());
+            return write_registers_req(function_code::write_single_register, slave, address, data.begin(), data.end());
         }
         bool write_multiple_coils_req(void);
         inline bool write_multiple_registers_req(const uint8_t slave, const uint16_t address, const std::initializer_list<uint16_t> data)
         {
-            return write_multiple_registers_req(slave, address, data.size(), data.begin(), data.end());
+            return write_multiple_registers_req(slave, address, data.begin(), data.end());
         }
         inline bool write_multiple_registers_req(const uint8_t slave, const uint16_t address, const size_t n, const uint16_t data[])
         {
-            return write_multiple_registers_req(slave, address, n, &data[0], &data[n]);
+            return write_multiple_registers_req(slave, address, &data[0], &data[n]);
         }
-        template <typename ITER>
-        inline bool write_multiple_registers_req(const uint8_t slave, const uint16_t address, const size_t n, const ITER begin, const ITER end)
+        inline bool write_multiple_registers_req(const uint8_t slave, const uint16_t address, const uint16_t* begin, const uint16_t* end)
         {
-            return write_registers_req(function_code::write_multiple_registers, slave, address, n, begin, end);
+            return write_registers_req(function_code::write_multiple_registers, slave, address, begin, end);
+        }
+        inline bool read_write_multiple_registers_req(const uint8_t slave, const uint16_t address, const std::initializer_list<uint16_t> data)
+        {
+            return read_write_multiple_registers_req(slave, address, data.size(), address, data.begin(), data.end());
+        }
+        inline bool read_write_multiple_registers_req(const uint8_t slave, const uint16_t read_address, const size_t read_n, const uint16_t write_address, const std::initializer_list<uint16_t> write_data)
+        {
+            return read_write_multiple_registers_req(slave, read_address, read_n, write_address, write_data.begin(), write_data.end());
+        }
+        inline bool read_write_multiple_registers_req(const uint8_t slave, const uint16_t address, const size_t n, const uint16_t data[])
+        {
+            return read_write_multiple_registers_req(slave, address, n, address, &data[0], &data[n]);
+        }
+        inline bool read_write_multiple_registers_req(const uint8_t slave, const uint16_t read_address, const size_t read_n, const uint16_t write_address, const size_t write_n, const uint16_t write_data[])
+        {
+            return read_write_multiple_registers_req(slave, read_address, read_n, write_address, &write_data[0], &write_data[write_n]);
+        }
+        inline bool read_write_multiple_registers_req(const uint8_t slave, const uint16_t address, const uint16_t* begin, const uint16_t* end)
+        {
+            return read_write_multiple_registers_req(slave, address, end - begin, address, begin, end);
+        }
+        inline bool read_write_multiple_registers_req(const uint8_t slave, const uint16_t read_address, const uint16_t read_n, const uint16_t write_address, const uint16_t* write_begin, const uint16_t* write_end)
+        {
+            return read_write_registers_req(function_code::read_write_multiple_registers, slave, read_address, read_n, write_address, write_begin, write_end);
         }
 
         void poll(void);
@@ -65,16 +88,19 @@ namespace ModbusPotato
         enum state m_state;
         system_tick_t m_timer;
         uint16_t m_slave_address;
-        uint16_t m_starting_register;
+        uint16_t m_read_starting_address;
+        uint16_t m_write_starting_address;
+        uint16_t m_write_n;
 
         bool read_registers_req(const enum function_code::function_code func, const uint8_t slave, const uint16_t address, const uint16_t n);
-        bool read_registers_rsp(IFramer* framer, bool holding);
+        bool read_registers_rsp(IFramer* framer, const enum function_code::function_code func);
 
-        template <typename ITER>
-        bool write_registers_req(const enum function_code::function_code func, const uint8_t slave, const uint16_t address, const size_t n, const ITER begin, const ITER end);
+        bool write_registers_req(const enum function_code::function_code func, const uint8_t slave, const uint16_t address, const uint16_t* begin, const uint16_t* end);
         bool write_registers_rsp(IFramer* framer, bool single);
 
-        bool sanity_check(const size_t n, const size_t len);
-        void send_and_wait(uint8_t slave, uint16_t address, size_t len);
+        bool read_write_registers_req(const enum function_code::function_code func, const uint8_t slave, const uint16_t read_address, const uint16_t read_n, const uint16_t write_address, const uint16_t* write_begin, const uint16_t* write_end);
+
+        bool sanity_check(const size_t n, const size_t n_max, const size_t len);
+        void send_and_wait(uint8_t slave, size_t len);
 };
 }
